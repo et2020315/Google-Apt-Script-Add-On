@@ -1,0 +1,72 @@
+<head>
+  <link rel="stylesheet" href="https://ssl.gstatic.com/docs/script/css/add-ons1.css">
+</head>
+
+<div id="skills-form"></div>
+<button onclick="addSkill()">Add Skill</button>
+<button onclick="saveSkills()">Save</button>
+<p id="psk"> </p> 
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+<script>
+  var numSkills = 0;
+
+  // either get new skills input, or get one prefilled
+  function getInput(num, skill) {
+    var input = "\
+      <div class=\"skill-inline\">\
+        <label for=\"skillName\">Skill: </label>\
+        <input type=\"text\" id=\"skill-name-" + num + "\" name=\"skillName\" value=\"" + skill.name + "\">\
+        <label for=\"skillLevel\">Proficiency: </label>\
+        <select id=\"skill-level-" + num + "\" name=\"skillLevel\">";
+    for (var i = 1; i <= 10; i++) {
+      input += "<option value=\"" + i + "\"";
+      if (i == skill.level) {
+        input += " selected";
+      }
+      input += ">" + i + "</option>";
+    }
+    input += "</select></div>";
+    return input;
+  }
+
+  // add blank skill
+  function addSkill() {
+    const input = getInput(numSkills, {name: "", level: 1});
+    $(input).appendTo("#skills-form");
+    numSkills++;
+  }
+
+  // save skills to global object
+  function saveSkills() {
+    var skillArr = [];
+    for (var i = 0; i < numSkills; i++) {
+      var skillObj = {
+        name: $("#skill-name-" + i).val(),
+        level: $("#skill-level-" + i).val()
+      };
+      skillArr.push(skillObj);
+    }
+    google.script.run.saveAllSkills(JSON.stringify(skillArr));
+    
+    document.getElementById("psk").innerHTML = "Your skills have been saved.You may close the window";
+  }
+
+  // loads prefilled form with saved global object
+  function initialize(stringifiedArr) {
+    var skills = JSON.parse(stringifiedArr);
+    numSkills = skills.length;
+    skills.forEach(function(skill, counter) {
+      const input = getInput(counter, skill);
+      $(input).appendTo("#skills-form");
+    });
+  }
+
+  function printFail(error) {
+    console.log("ERROR: " + error);
+  }
+
+  $(document).ready(function() {
+    google.script.run.withSuccessHandler(initialize).withFailureHandler(printFail).getAllSkills(); 
+  });
+</script>

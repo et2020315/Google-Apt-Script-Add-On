@@ -1,0 +1,101 @@
+<style>
+
+  .information {
+    width:100%;
+    display:flex;
+    flex-direction:column;
+    justify-content:center;
+  }
+  
+  .information-row {
+    margin:auto;
+    display:flex;
+    flex-direction:row;
+    justify-content:center;
+  }
+  
+  .info-label {
+    font-style:bold;
+    font-size:14px;
+    padding-right:5px;
+    padding-top:5px;
+  }
+</style>
+
+<div id="resume-header"></div>
+<link rel="stylesheet" href="https://ssl.gstatic.com/docs/script/css/add-ons1.css">
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+<script>
+// ui for header input
+    function initialize(stringifiedObj) {
+        var header = JSON.parse(stringifiedObj);
+        const content = "<div class=\"information\"><div class=\"information-row\"><label class=\"info-label\" for=\"fname\">First name: </label>\
+            <input type=\"text\" id=\"fname\" name=\"fname\" value=\"" + header.fname + "\"></div>\
+            <br>\
+            \
+            <div class=\"information-row\"><label class=\"info-label\" for=\"lname\">Last name: </label>\
+            <input type=\"text\" id=\"lname\" name=\"lname\" value=\"" + header.lname + "\"></div>\
+            <br>\
+            \
+            <div class=\"information-row\"><label class=\"info-label\" for=\"email\">Email: </label>\
+            <input type=\"email\" id=\"email\" name=\"email\" value=\"" + header.email + "\"></div>\
+            <br>\
+            \
+            <div class=\"information-row\"><label class=\"info-label\" for=\"phone\">Phone: </label>\
+            <input type=\"tel\" id=\"phone\" name=\"phone\" value=\"" + header.phone + "\"></div>\
+            <br>\
+            \
+            <div class=\"information-row\"><label class=\"info-label\" for=\"lkacc\">LinkedIn Account URL: </label>\
+            <input type=\"url\" id=\"lkacc\" name=\"lkacc\" value=\"" + header.lkacc + "\"></div>\
+            <br>\
+            \
+            <div class=\"information-row\"><label class=\"info-label\" for=\"porturl\">Portfolio URL: </label>\
+            <input type=\"url\" id=\"porturl\" name=\"porturl\" value=\"" + header.porturl + "\"></div>\
+            <br>\
+            \
+            <div class=\"information-row\"><input type=\"button\" value=\"Save\" onclick=\"saveHeader()\" /></div></div>";
+
+        $("#resume-header").replaceWith(content);
+    }
+
+    function printFail(error) {
+        console.log("ERROR: " + error);
+    }
+
+    function saveHeader() {
+      if (emailValidation($("#email").val())) {
+         const headerObj = {
+            fname: $("#fname").val(),
+            lname: $("#lname").val(),
+            email: $("#email").val(),
+            phone: $("#phone").val(),
+            lkacc: $("#lkacc").val(),
+            porturl: $("#porturl").val(),
+         };
+          google.script.run.saveHeader(JSON.stringify(headerObj));
+        
+          document.getElementById("hdd").innerHTML = "Your header info has been saved.You may close the window";
+        } 
+        else {
+          document.getElementById("hdd").innerHTML = "Your header was not saved.";
+        }
+    }
+
+// checks if email is valid
+    function emailValidation(email) {
+      const re = /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+      if (re.test(email) || (email == "")) {
+        return true;
+      } else {
+        alert("invalid email address");
+        return false;
+      }
+    }
+
+    $(document).ready(function() {
+        google.script.run.withSuccessHandler(initialize).withFailureHandler(printFail).getHeader(); 
+    });
+</script>
+<div class="information-row">
+<p id="hdd"> </p>
+</div>

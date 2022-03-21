@@ -1,0 +1,61 @@
+<div id="section-form"></div>
+<button onclick="addSections()">Add section</button>
+<button onclick="saveSections()">Save</button>
+<p id="sss"></p>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+
+<link rel="stylesheet" href="https://ssl.gstatic.com/docs/script/css/add-ons1.css">
+<script>
+  var numSections = 0;
+
+  function getInputField(sectionName, sectionContent, id) {
+    var input = "\
+      <div class=\"section-inline\">\
+        <label for=\"sectionName\">Section title: </label>\
+        <input type=\"text\" id=\"section-name-" + id + "\" name=\"sectionName\" value=\"" + sectionName + "\">\
+        <br><br><label for=\"sectionContent\">Content: </label>\
+        <textarea cols=\"50\" id=\"section-content-"+id +"\" name=\"sectionContent\" value=\" \"> </textarea>"+
+        "</div><br><br>";
+    return input;  // style=\"line-height:60px;\"
+  }
+
+  function addSections() {
+    const input = getInputField("", -1, numSections);
+    $(input).appendTo("#section-form");
+    numSections++;
+  }
+
+  function saveSections() {
+    var sectionArr = [];
+    for (var i = 0; i < numSections; i++) {
+      var sectionObj = {
+        name: $("#section-name-" + i).val(),
+        content: $("#section-content-" + i).val()
+      };
+      sectionArr.push(sectionObj);
+    }
+    console.log("saveSections()");
+    console.log(sectionArr);
+    google.script.run.saveSections(JSON.stringify(sectionArr));
+    console.log("finish saving");
+    document.getElementById("sss").innerHTML = "Your section info has been saved. You may close the window";
+  }
+
+  function initialize(stringifiedArr) {
+    var sections = JSON.parse(stringifiedArr);
+    numSections = sections.length;
+    var counter = 0;
+    sections.forEach(function(section, counter) {
+      const input = getInputField(section.name, section.content, counter);
+      $(input).appendTo("#section-form");
+    });
+  }
+
+  function printFail(error) {
+    console.log("ERROR: " + error);
+  }
+
+  $(document).ready(function() {
+    google.script.run.withSuccessHandler(initialize).withFailureHandler(printFail).getSections();
+  });
+</script>

@@ -1,0 +1,171 @@
+  <head>
+    <link rel="stylesheet" href="https://ssl.gstatic.com/docs/script/css/add-ons1.css">
+  </head>
+
+    <script src="https://unpkg.com/js-logger/src/logger.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script>
+    var numEducations = 0;
+
+    // either get new education, or get prefilled education
+    // this following section is the ui for education designed to prompt the user for inputs
+    function getInput(num, eduObj) {
+      var input = "<br>\
+   <label for=\"school-" + num + "\">School: </label>\
+   <input type=\"text\" id=\"school-" + num + "\" name=\"school-" + num + "\" value=\"" + eduObj.school + "\">\
+   <br>\
+   \
+   <br>\
+   <label for=\"major-" + num + "\">Major: </label>\
+   <input type=\"text\" id=\"major-" + num + "\" name=\"major-" + num + "\" value=\"" + eduObj.major + "\">\
+   <br>\
+    \
+   <br>\
+  <label for=\"GPA-" + num + "\">GPA: </label>\
+  <input type=\"text\" id=\"GPA-" + num + "\" name=\"GPA-" + num + "\" value=\"" + eduObj.GPA + "\">\
+  <br>\
+  \
+  <br>\
+  <label for=\"affiliation-" + num + "\">Affiliation: </label>\
+  <input type=\"text\" id=\"affiliation-" + num + "\" name=\"affiliation-" + num + "\" value=\"" + eduObj.affiliation + "\">\
+  <br>\
+  \
+  <br>\
+  <label for=\"startm-" + num + "\">Starting Month: </label>\
+  <input type=\"text\" id=\"startm-" + num + "\" name=\"startm-" + num + "\" value=\"" + eduObj.startm + "\">\
+  <br>\
+    \
+  <br>\
+  <label for=\"starty-" + num + "\">Starting Year: </label>\
+  <input type=\"text\" id=\"starty-" + num + "\" name=\"starty-" + num + "\" value=\"" + eduObj.starty + "\">\
+  <br>\
+  \
+  <br>\
+  <label for=\"endm-" + num + "\">Ending Month: </label>\
+  <input type=\"text\" id=\"endm-" + num + "\" name=\"endm-" + num + "\" value=\"" + eduObj.endm + "\">\
+  <br>\
+   \
+  <br>\
+  <label for=\"endy-" + num + "\">Ending Year: </label>\
+  <input type=\"text\" id=\"endy-" + num + "\" name=\"endy-" + num + "\" value=\"" + eduObj.endy + "\">\
+  <br>\
+  \
+  <br>";
+  return input;
+    }
+
+    // add blank education
+    function addEducation() {
+      const emptyObj = {
+        school: "",
+        major: "",
+        GPA: "",
+        affiliation: "",
+        startm: "",
+        endm: "",
+        starty: "",
+        endy: "",
+      }
+      var input = getInput(numEducations, emptyObj);
+      $(input).appendTo("#edu-form");
+      numEducations++;
+    }
+
+    // save education to global variable
+    function saveEducation() {
+      var eduArr = [];
+      var saveEdu = true;
+      var text = /^[0-9]+$/;
+      for (var i = 0; i < numEducations; i++) {
+         if (gpaValidation($("#GPA-" + i).val()) && yearValidation($("#starty-" + i).val(), $("#endy-" + i).val())){
+                const eduObj = {
+                school : $("#school-" + i).val(),
+                major : $("#major-" + i).val(),
+                GPA : $("#GPA-" + i).val(),
+                affiliation : $("#affiliation-" + i).val(),
+                startm : $("#startm-" + i).val(),
+                endm : $("#endm-" + i).val(),
+                starty : $("#starty-" + i).val(),
+                endy : $("#endy-" + i).val()          
+                };
+               eduArr.push(eduObj);
+       } else {
+           saveEdu = false;
+           document.getElementById("ped").innerHTML = "Your info was not saved.";
+          }
+      }
+      if (saveEdu) {
+        google.script.run.saveEducation(JSON.stringify(eduArr));
+      
+        document.getElementById("ped").innerHTML = "Your education info has been saved.You may close the window";
+      }
+      saveEdu = true;
+    }
+    
+// checks if GPA is numeric
+   function gpaValidation(gpa) {
+      if (isNaN(gpa)) {
+         alert("Please Enter Numeric Values Only for GPA");
+         return false;
+       }
+      return true;
+   }
+
+// checks if years are numeric and start year <= end year
+   function yearValidation(year1, year2) {
+     if (yearNumeric(year1) && yearNumeric(year2)){
+        if (year1<=year2) {
+          return true;
+      } else {
+           alert("Ending Year must be later than Starting Year");
+        }
+      } else {
+         return false;
+       }
+      return false;
+   }
+
+// checks if year is numeric, 4 characters,and is current
+    function yearNumeric(year) {
+    //var text = /^[0-9]+$/;
+    if (year != 0) {
+        if (isNaN(year)) {
+
+            alert("Please Enter Numeric Values Only for the Year");
+            return false;
+        }
+
+        if (year.length != 4) {
+            alert("Year is not proper. Please check");
+            return false;
+        }
+        var current_year=new Date().getFullYear();
+        if((year < 1920) || (year > (current_year+10))) {
+            var year = current_year+10;
+            alert("Year should be in range 1920 to " + year );
+            return false;
+        }
+        return true;
+      }
+    }
+
+    // called upon startup, initializes prefilled form to global variable
+    function initialize(stringifiedEdu) {
+        var eduList = JSON.parse(stringifiedEdu);
+        numEducations = eduList.length;
+        eduList.forEach(function(edu, counter) {
+          const input = getInput(counter, edu);
+          $(input).appendTo("#edu-form");
+        });
+    }
+
+    $(document).ready(function() {
+        google.script.run.withSuccessHandler(initialize).getEducation(); 
+    });
+
+    </script>
+
+<center id="edu-form"></center>
+<button onclick="addEducation()">Add Education</button>
+<button onclick="saveEducation()">Submit</button>
+<p id="ped"> </p>

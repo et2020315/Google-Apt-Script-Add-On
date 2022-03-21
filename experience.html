@@ -1,0 +1,139 @@
+
+  <head>
+    <link rel="stylesheet" href="https://ssl.gstatic.com/docs/script/css/add-ons1.css">
+  </head>
+
+  <script src="https://unpkg.com/js-logger/src/logger.min.js"></script>
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+  <script>
+    var numCompanies = 0;
+
+    // either get blank input, or get prefilled input from existing object
+    function getInput(companyNum, companyObj) {
+      var input = "\
+    <h4> Experience for Company " + (companyNum + 1) + " </h4>\
+         company:\
+            <input type = \"text\" name = \"company-" + companyNum + "\" id=\"company-" + companyNum + "\" value = \"" + companyObj.company + "\" maxlength = \"200\" />\
+         <br>\
+         <br>\
+\
+         position:\
+            <input type = \"text\" name = \"position-" + companyNum + "\" id=\"position-" + companyNum + "\" value = \"" + companyObj.position + "\" maxlength = \"200\" />\
+         <br>\
+         <br>\
+         Start date:\
+            <input type = \"date\" name = \"startDate-" + companyNum + "\" id=\"startDate-" + companyNum + "\" value = \"" + companyObj.startDate + "\" />\
+         End date:\
+            <input type = \"date\" name = \"endDate-" + companyNum + "\" id=\"endDate-" + companyNum + "\" value = \"" + companyObj.endDate + "\" />\
+         <br>\
+         <br>\
+         description:\
+            <input type = \"text\" name = \"description-" + companyNum + "\" id=\"description-" + companyNum + "\" value = \"" + companyObj.description + "\" maxlength = \"1000\"/>\
+         <br>\
+         <br>\
+         department:\
+         <select name=\"department-" + companyNum + "\" id=\"department-" + companyNum + "\">\
+            <option value=\"tech\">tech</option>\
+            <option value=\"HR\">HR</option>\
+            <option value=\"business\">business</option>\
+            <option value=\"other\">other</option>\
+        </select>\
+        <br>\
+        <br>\
+        supervisor:\
+          <input type = \"text\" name = \"supervisor-" + companyNum + "\" id= \"supervisor-" + companyNum + "\" value = \"" + companyObj.supervisor + "\" maxlength = \"200\" />\
+        <br>\
+        <br>\
+        contactEmail:\
+          <input type = \"text\" name = \"contactEmail-" + companyNum + "\" id= \"contactEmail-" + companyNum + "\" value = \"" + companyObj.contactEmail + "\" maxlength = \"200\" />\
+        <br>\
+        <br>";
+      return input;
+    }
+    
+    // add blank experience
+    function addExperience() {
+      const emptyObj = {
+        company: "",
+        position: "",
+        department: "",
+        description: "",
+        supervisor: "",
+        contactEmail: "",
+        startDate: "",
+        endDate: "",
+      }
+      var input = getInput(numCompanies, emptyObj);
+      $(input).appendTo("#exp-form");
+      numCompanies++;
+    }
+
+    // save experiences to global variable
+    function saveExperiences(){
+        var expArr = [];
+        var saveExp = true;
+        for (var i = 0; i < numCompanies; i++) {
+          if (dateValidation($("#startDate-" + i).val(), $("#endDate-" + i).val()) && emailValidation($("#contactEmail-" + i).val())) {
+            const expObj = {
+              company : $("#company-" + i).val(),
+              position : $("#position-" + i).val(),
+              department : $("#department-" + i).val(),
+              description : $("#description-" + i).val(),
+              supervisor : $("#supervisor-" + i).val(),
+              contactEmail : $("#contactEmail-" + i).val(),
+              startDate: $("#startDate-" + i).val(),
+              endDate: $("#endDate-" + i).val(),
+            };
+            expArr.push(expObj);
+          }
+         else {
+           document.getElementById("xpxp").innerHTML = "Your experience was not saved.";
+           saveExp = false;
+         }
+        }
+        if (saveExp) {
+          google.script.run.saveExperience(JSON.stringify(expArr));
+          document.getElementById("xpxp").innerHTML = "Your experience info has been saved. You may close the window";
+        }
+    }
+    
+    function emailValidation(email) {
+      const re = /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+      if (re.test(email) || (email == "")) {
+        return true;
+      } else {
+        alert("invalid email address");
+        return false;
+      }
+    }
+    
+    function dateValidation(date1, date2) {
+      if (date1<=date2) {
+          return true;
+    } else {
+           alert("Ending Date must be later than Starting Date");
+      }
+
+      return false;
+   }
+
+    // called upon startup, initializes form from global variable.
+    function initialize(stringifiedExp) {
+        var expList = JSON.parse(stringifiedExp);
+        numCompanies = expList.length;
+        expList.forEach(function(exp, counter) {
+          const input = getInput(counter, exp);
+          $(input).appendTo("#exp-form");
+        });
+    }
+
+    $(document).ready(function() {
+        google.script.run.withSuccessHandler(initialize).getExperience(); 
+    });
+
+    </script>
+
+  <center id="exp-form"></center>
+  <button onclick="addExperience()">Add Experience</button>
+  <button onclick="saveExperiences()">Submit</button>
+  <p id="xpxp"> </p>

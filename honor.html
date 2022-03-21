@@ -1,0 +1,104 @@
+<head>
+  <link rel="stylesheet" href="https://ssl.gstatic.com/docs/script/css/add-ons1.css">
+</head>
+
+    <script src="https://unpkg.com/js-logger/src/logger.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script>
+    var numHonors = 0;
+
+    // get HTML for a pre-filled honors input, or for a new honors input
+    function getInput(num, honorObj) {
+      var input = "<br>\
+    <br>\
+         awardedHonor:\
+            <input type = \"text\"  id= \"awardedHonor-" + num + "\" value=\"" + honorObj.awardedHonor + "\" />\
+         <br>\
+         <br>\
+\
+         awardedBy:\
+            <input type = \"text\" id=\"awardedBy-" + num + "\" value = \"" + honorObj.awardedBy + "\" />\
+         <br>\
+         <br>\
+         description:\
+            <input type = \"text\" id=\"description-" + num + "\" value = \"" + honorObj.description + "\" />\
+         <br>\
+         <br>\
+         awardedYear:\
+         <select id=\"awardedYear-" + num + "\" value=\"" + honorObj.awardedYear + "\">\
+            <option value=\"awarded before 2015\">awarded before 2015</option>\
+            <option value=\"awarded 2015\">awarded 2015</option>\
+            <option value=\"awarded 2016\">awarded 2016</option>\
+            <option value=\"awarded 2017\">awarded 2017</option>\
+            <option value=\"awarded 2018\">awarded 2018</option>\
+            <option value=\"awarded 2019\">awarded 2019</option>\
+            <option value=\"awarded 2020\">awarded 2020</option>\
+\
+        </select>\
+        awardedType:\
+        <select id = \"awardedType-" + num + "\" value=\"" + honorObj.awardedType + "\">\
+          <option value=\"teaching awards\">teaching awards</option>\
+          <option value=\"university honor\">university honor</option>\
+          <option value=\"department honor\">department honor</option>\
+          <option value=\"major honor\">major honor</option>\
+          <option value=\"research awards\">research awards</option>\
+        </select>\
+        <br>\
+        <br>";
+        return input;
+    }
+
+    // adding a new empty honor
+    function addHonor() {
+      const emptyObj = {
+        awardedHonor: "",
+        awardedBy: "",
+        description: "",
+        awardedYear: "",
+        awardedType: "",
+      }
+      var input = getInput(numHonors, emptyObj);
+      $(input).appendTo("#honors-form");
+      numHonors++;
+    }
+
+    // save honors to backend global object
+    function saveHonors() {
+        var honorsArr = [];
+        for (var i = 0; i < numHonors; i++) {
+          const honorObj = {
+            awardedHonor: $("#awardedHonor-" + i).val(),
+            awardedBy : $("#awardedBy-" + i).val(),
+            description : $("#description-" + i).val(),
+            awardedYear : $("#awardedYear-" + i).val(),
+            awardedType : $("#awardedType-" + i).val(),
+          };
+          honorsArr.push(honorObj);
+        }
+        google.script.run.saveHonor(JSON.stringify(honorsArr));
+        document.getElementById("hhr").innerHTML = "Your honor info has been saved. You may close the window";
+    }
+
+    // called on startup from the saved global honors object
+    function initialize(stringifiedHonor) {
+      var honorList = JSON.parse(stringifiedHonor);
+      numHonors = honorList.length;
+      honorList.forEach(function(honor, counter) {
+        const input = getInput(counter, honor);
+        $(input).appendTo("#honors-form");
+      });
+    }
+
+    $(document).ready(function() {
+        google.script.run.withSuccessHandler(initialize).getHonor(); 
+    });
+
+    </script>
+
+<center id="honors-form">
+  <h4> Honor or Awards </h4>
+  <p> please enter the name of the honor/award, the organization or the person who gave the award, a brief description of the award/honor, the year you got the award/honor, and the type of the award/honor. </p>
+</center>
+<button onclick="addHonor()">Add Honor</button>
+<button onclick="saveHonors()">Submit</button>
+<p id="hhr"></p>

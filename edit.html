@@ -1,0 +1,674 @@
+
+<!DOCTYPE html>
+<html>
+  <head>
+    <base target="_top">
+    <link rel="stylesheet" href="https://ssl.gstatic.com/docs/script/css/add-ons1.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <!-- <script src="https://unpkg.com/js-logger/src/logger.min.js"></script> -->
+    <script>
+    
+// edit experience
+    function editCheckedItems3(jsonString){
+      var json3list = JSON.parse(jsonString);
+      var expvNum = document.getElementById("text-exp-view").value -1;
+      if (expvNum < json3list.length && expvNum >=0){
+        var json3 = json3list[expvNum];
+        console.log("********************");
+        console.log(json3);
+        var allchecks = document.getElementsByName("editchecks3");
+        for (var i = 0; i < allchecks.length;i++){
+          // console.log(allchecks[i]);
+          console.log("checkbox:"+allchecks[i].checked);
+          if (allchecks[i].checked == true){
+            var curr_check_id = allchecks[i].getAttribute("id");
+            var curr_input_id = curr_check_id.replace("check","replace");
+            var user_enter = document.getElementById(curr_input_id).value;
+            console.log("curr_check_id:"+curr_check_id + " curr_input_id:"+curr_input_id + " user_enter:" + user_enter + "\n");
+            if (curr_check_id.replace("check","") == "contactEmail") {
+              if (emailValidation(user_enter.trim())){
+                json3[curr_check_id.replace("check","")] = user_enter.trim();
+              }
+            } else if (curr_check_id.replace("check","") == "startDate"){
+              if (dateOrderValidation(user_enter.trim(), json3["endDate"])){
+                json3[curr_check_id.replace("check","")] = user_enter.trim();
+              }
+            } else if (curr_check_id.replace("check","") == "endDate"){
+              if (dateOrderValidation(json3["startDate"], user_enter.trim())){
+                json3[curr_check_id.replace("check","")] = user_enter.trim();
+              }
+            } else {
+              json3[curr_check_id.replace("check","")] = user_enter.trim();
+            }
+          }// end if
+        }// end for
+        json3list[expvNum] = json3;
+        console.log("---------");
+        console.log(json3list);
+        google.script.run.saveExperience(JSON.stringify(json3list));
+      }
+      else{
+        alert("Please enter a valid number");
+      }
+    }
+
+// edit header
+    function editCheckedItems2(jsonString){
+      var json2 = JSON.parse(jsonString);
+      console.log("********************");
+      console.log(json2);
+      var allchecks = document.getElementsByName("editchecks2");
+      for (var i = 0; i < allchecks.length;i++){
+        console.log("checkbox:"+allchecks[i].checked);
+        if (allchecks[i].checked == true){
+          var curr_check_id = allchecks[i].getAttribute("id");
+          var curr_input_id = curr_check_id.replace("check","replace");
+          var user_enter = document.getElementById(curr_input_id).value;
+          console.log("curr_check_id:"+curr_check_id + " curr_input_id:"+curr_input_id + " user_enter:" + user_enter + "\n");
+          if (curr_check_id.replace("check","") == "email") {
+            if (emailValidation(user_enter.trim())) {
+              json2[curr_check_id.replace("check","")] = user_enter.trim();
+            }
+          } else {
+            json2[curr_check_id.replace("check","")] = user_enter.trim();
+          }
+        }// end if
+
+      }// end for
+      var json2str = JSON.stringify(json2);
+      console.log("---------");
+      console.log(json2str);
+      google.script.run.saveHeader(JSON.stringify(json2));
+      console.log("save header");
+    }
+
+// edit education
+    function editCheckedItems1(jsonString){
+      var json1list = JSON.parse(jsonString);
+      var eduvNum = document.getElementById("text-edu-view").value -1;
+      if (eduvNum < json1list.length && eduvNum >=0){
+        var json1 = json1list[eduvNum];
+        console.log("********************");
+        console.log(json1);
+        var allchecks = document.getElementsByName("editchecks1");
+        for (var i = 0; i < allchecks.length;i++){
+          console.log("checkbox:"+allchecks[i].checked);
+          if (allchecks[i].checked == true){
+            var curr_check_id = allchecks[i].getAttribute("id");
+            var curr_input_id = curr_check_id.replace("check","replace");
+            var user_enter = document.getElementById(curr_input_id).value;
+            console.log("curr_check_id:"+curr_check_id + " curr_input_id:"+curr_input_id + " user_enter:" + user_enter + "\n");
+            if (curr_check_id.replace("check","") == "GPA") {
+              if (gpaValidation(user_enter.trim())) {
+                json1[curr_check_id.replace("check","")] = user_enter.trim();
+              }
+            } else if (curr_check_id.replace("check","") == "starty"){
+              if (dateOrderValidation(user_enter.trim(), json1["endy"])){
+                json1[curr_check_id.replace("check","")] = user_enter.trim();
+              }
+            } else if (curr_check_id.replace("check","") == "endy"){
+              if (dateOrderValidation(json1["starty"], user_enter.trim())){
+                json1[curr_check_id.replace("check","")] = user_enter.trim();
+              }
+            } else {
+              json1[curr_check_id.replace("check","")] = user_enter.trim();
+            }
+          }// end if
+        }// end for
+        json1list[eduvNum] = json1;
+        console.log("---------");
+        console.log(json1list);
+        google.script.run.saveEducation(JSON.stringify(json1list));
+      }
+      else{
+        alert("Please enter a valid number");
+      }
+    }
+
+//edit honor
+    function editCheckedItems4(jsonString){
+    
+      var json4list = JSON.parse(jsonString);
+      var hrnvNum = document.getElementById("text-hon-view").value -1;
+      if (hrnvNum < json4list.length && hrnvNum >=0){
+        var json4 = json4list[hrnvNum];
+        console.log("********************");
+        console.log(json4);
+        var allchecks = document.getElementsByName("editchecks4");
+        for (var i = 0; i < allchecks.length;i++){
+          console.log("checkbox:"+allchecks[i].checked);
+          if (allchecks[i].checked == true){
+            var curr_check_id = allchecks[i].getAttribute("id");
+            var curr_input_id = curr_check_id.replace("check","replace");
+            var user_enter = document.getElementById(curr_input_id).value;
+            console.log("curr_check_id:"+curr_check_id + " curr_input_id:"+curr_input_id + " user_enter:" + user_enter + "\n");
+            json4[curr_check_id.replace("check","")] = user_enter.trim();
+          }// end if
+        }// end for
+        json4list[hrnvNum] = json4;
+        console.log("---------");
+        console.log(json4list);
+        google.script.run.saveHonor(JSON.stringify(json4list));
+      }
+      else{
+        alert("Please enter a valid number");
+      }
+      
+    }
+
+
+
+// edit skill
+    
+    function editCheckedItems5(jsonString){
+    
+      var json5list = JSON.parse(jsonString);
+      var SKvNum = document.getElementById("text-skl-view").value -1;
+      if (SKvNum < json5list.length && SKvNum >=0){
+        var json5 = json5list[SKvNum];
+        console.log("********************");
+        console.log(json5);
+        var allchecks = document.getElementsByName("editchecks5");
+        for (var i = 0; i < allchecks.length;i++){
+          console.log("checkbox:"+allchecks[i].checked);
+          if (allchecks[i].checked == true){
+            var curr_check_id = allchecks[i].getAttribute("id");
+            var curr_input_id = curr_check_id.replace("check","replace");
+            var user_enter = document.getElementById(curr_input_id).value;
+            console.log("curr_check_id:"+curr_check_id + " curr_input_id:"+curr_input_id + " user_enter:" + user_enter + "\n");
+            json5[curr_check_id.replace("check","").replace("skill","")] = user_enter.trim();
+          }// end if
+        }// end for
+        json5list[SKvNum] = json5;
+        console.log("---------");
+        console.log(json5list);
+        google.script.run.saveAllSkills(JSON.stringify(json5list));
+      }
+      else{
+        alert("Please enter a valid number");
+      }
+      
+    }
+
+// edit free text
+    function editCheckedItems6(jsonString){
+    
+      var json6list = JSON.parse(jsonString);
+      var SKvNum = document.getElementById("text-ft-view").value -1;
+      if (SKvNum < json6list.length && SKvNum >=0){
+        var json6 = json6list[SKvNum];
+        console.log("********************");
+        console.log(json6);
+        var allchecks = document.getElementsByName("editchecks6");
+        for (var i = 0; i < allchecks.length;i++){
+          console.log("checkbox:"+allchecks[i].checked);
+          if (allchecks[i].checked == true){
+            var curr_check_id = allchecks[i].getAttribute("id");
+            var curr_input_id = curr_check_id.replace("check","replace");
+            var user_enter = document.getElementById(curr_input_id).value;
+            console.log("curr_check_id:"+curr_check_id + " curr_input_id:"+curr_input_id + " user_enter:" + user_enter + "\n");
+            json6[curr_check_id.replace("check","").replace("section","")] = user_enter.trim();
+          }// end if
+        }// end for
+        json6list[SKvNum] = json6;
+        console.log("---------");
+        console.log(json6list);
+        google.script.run.saveSections(JSON.stringify(json6list));
+      }
+      else{
+        alert("Please enter a valid number");
+      }
+      
+    }
+    
+    
+// ---------------------- validation -------------------------
+// checks if GPA is numeric
+   function gpaValidation(gpa) {
+      if (isNaN(gpa)) {
+         alert("Please Enter Numeric Values Only for GPA");
+         return false;
+       }
+      return true;
+   }
+// checks if email is valid
+  function emailValidation(email) {
+      const re = /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+      if (re.test(email) || (email == "")) {
+        return true;
+      } else {
+        alert("invalid email address");
+        return false;
+      }
+    }
+  
+// checks if start date is before end date
+  function dateOrderValidation(date1, date2) {
+      if (date1<=date2) {
+          return true;
+    } else {
+           alert("Ending Date must be later than Starting Date");
+      }
+
+      return false;
+   }
+   
+// checks for valid year
+  function dateNumberValidation(year) {
+    //var text = /^[0-9]+$/;
+    if (year != 0) {
+        if (isNaN(year)) {
+
+            alert("Please Enter Numeric Values Only for the Year");
+            return false;
+        }
+
+        if (year.length != 4) {
+            alert("Year is not proper. Please check");
+            return false;
+        }
+        var current_year=new Date().getFullYear();
+        if((year < 1920) || (year > (current_year+10))) {
+            var year = current_year+10;
+            alert("Year should be in range 1920 to " + year );
+            return false;
+        }
+        return true;
+      }
+    }
+
+ // ---------------- education -------------------------------
+     function showEditEdu(listEdu){
+       
+       console.log(listEdu);
+       var EDU0 = JSON.parse(listEdu);
+       if (EDU0.length <= 0){
+         document.getElementById("pschool").innerHTML = "you haven't entered any education yet. list is empty.";
+       }
+       else {
+         var viewedunum = document.getElementById("text-edu-view").value -1;
+         console.log(viewedunum);
+         
+         if (viewedunum >= EDU0.length || viewedunum < 0){
+           document.getElementById("pschool").innerHTML = "does not exist this index";
+         }
+         else {
+           var edu = EDU0[viewedunum];
+           document.getElementById("pschool").innerHTML="school:"+edu.school+"<br> major:"+edu.major+"<br> GPA:"+edu.GPA+"<br> class:"+edu.affiliation+"<br>start month:"+edu.startm+"<br>start year:"+edu.starty+"<br>end month:"+edu.endm+"<br>end year:"+edu.endy+" ";
+    
+         }
+       }// end outer else
+    }
+
+//------------------------  EXPERIENCE ----------------------------
+     function showEditEXP(listExp){
+       
+       console.log(listExp);
+       var EXP0 = JSON.parse(listExp);
+       if (EXP0.length <= 0){
+         document.getElementById("pEXP").innerHTML = "you haven't entered any experience yet. list is empty.";
+       }
+       else {
+         var viewexpnum = document.getElementById("text-exp-view").value -1;
+         console.log(viewexpnum);
+         
+         if (viewexpnum >= EXP0.length || viewexpnum < 0){
+           document.getElementById("pEXP").innerHTML = "does not exist this index";
+         }
+         else {
+           var EXP = EXP0[viewexpnum];
+           document.getElementById("pEXP").innerHTML="company:"+EXP.company+"<br> position:"+EXP.position+"<br> department:"+EXP.department+"<br> description:"+EXP.description+"<br>supervisor:"+EXP.supervisor+"<br>supervisor contact:"+EXP.contactEmail+"<br>start date:"+EXP.startDate+"<br>end date:"+EXP.endDate+" ";
+         
+         }
+       }// end outer else
+    }
+
+// ------------------ header -------------------------
+     function showEditHead(jsonHead1){
+       console.log(jsonHead1);
+       var jhead = JSON.parse(jsonHead1);
+       document.getElementById("pH").innerHTML="last name:"+jhead.lname+"<br> first name:"+jhead.fname+"<br> phone:"+jhead.phone+"<br> email:"+jhead.email+"<br>linkedin:"+jhead.lkacc+"<br>profile:"+jhead.porturl+" ";
+    }
+//-------------------------------------- Honor ---------------------------------------------
+    //function showEditHonor(jsonHrn){
+      // console.log(jsonHrn);
+       //var jhrn = JSON.parse(jsonHrn);
+       //document.getElementById("pHrn").innerHTML="awardedHonor:"+jhrn.awardedHonor+"<br>awardedBy:"+jhrn.awardedBy+"<br>description:"+jhrn.description+"<br>awardedYear:"+jhrn.awardedYear+"<br>awardedType:"+jhrn.awardedType+" ";
+    //}
+    
+    function showEditHonor(listhrn){
+       
+       console.log(listhrn);
+       var HRN0 = JSON.parse(listhrn);
+       if (HRN0.length <= 0){
+         document.getElementById("pHrn").innerHTML = "you haven't entered any experience yet. list is empty.";
+       }
+       else {
+         var viewhrnnum = document.getElementById("text-hon-view").value -1;
+         console.log(viewhrnnum);
+         
+         if (viewhrnnum >= HRN0.length || viewhrnnum < 0){
+           document.getElementById("pHrn").innerHTML = "does not exist this index";
+         }
+         else {
+           var jhrn = HRN0[viewhrnnum];
+           document.getElementById("pHrn").innerHTML="awardedHonor:"+jhrn.awardedHonor+"<br>awardedBy:"+jhrn.awardedBy+"<br>description:"+jhrn.description+"<br>awardedYear:"+jhrn.awardedYear+"<br>awardedType:"+jhrn.awardedType+" ";
+         }
+       }// end outer else
+    }
+
+   // ----------------------- skills ------------------------------
+   function showEditSkills(listSK){
+       
+       console.log(listSK);
+       var SK0 = JSON.parse(listSK);
+       if (SK0.length <= 0){
+         document.getElementById("pSK").innerHTML = "you haven't entered any SKILLS yet. list is empty.";
+       }
+       else {
+         var viewSKnum = document.getElementById("text-skl-view").value -1;
+         console.log(viewSKnum);
+         
+         if (viewSKnum >= SK0.length || viewSKnum < 0){
+           document.getElementById("pSK").innerHTML = "does not exist this index";
+         }
+         else {
+           var jSK = SK0[viewSKnum];
+           console.log(jSK);
+           document.getElementById("pSK").innerHTML= "skill name:"+jSK.name+"<br>skill level:"+jSK.level+"<br>";
+         }
+       }// end outer else
+    }
+
+
+// --------------------- section -----------------------------
+  function showEditSections(listSc){
+       
+       console.log(listSc);
+       var Sc0 = JSON.parse(listSc);
+       if (Sc0.length <= 0){
+         document.getElementById("pft").innerHTML = "you haven't entered any section yet. list is empty.";
+       }
+       else {
+         var viewScnum = document.getElementById("text-ft-view").value -1;
+         console.log(viewScnum);
+         
+         if (viewScnum >= Sc0.length || viewScnum < 0){
+           document.getElementById("pft").innerHTML = "does not exist this index";
+         }
+         else {
+           var jSc = Sc0[viewScnum];
+           console.log(jSc);
+           document.getElementById("pft").innerHTML= "section name:"+jSc.name+"<br>setion content:"+jSc.content+"<br>";
+         }
+       }// end outer else
+    }
+
+
+    </script>
+
+
+  </head>
+
+  <body>
+    
+    <h3> current free text </h3>
+    <div> 
+     <p id="pft"> enter a number starting from 1 to view nth free text section you entered  </p>
+    <input type="text" id="text-ft-view" value="">
+    <button onclick="google.script.run.withSuccessHandler(showEditSections).withUserObject(this).getSections()"> get-one-freetext </button>
+    </div>
+    
+    <h2> Edit free text info</h2>
+    <div>
+    <input type="checkbox" id="sectionnamecheck" name="editchecks6" value="sectionnamecheck">
+      <label for="sectionnamecheck"> section name</label>
+      <input type="text" id="sectionnamereplace" name="editinputs6" value=" ">
+      <br>
+      <br>
+   <input type="checkbox" id="sectioncontentcheck" name="editchecks6" value="sectioncontentcheck">
+      <label for="sectioncontentcheck"> section content</label>
+      <input type="text" id="sectioncontentreplace" name="editinputs6" value=" ">
+      <br>
+      <br>
+      <button onclick="google.script.run.withSuccessHandler(editCheckedItems6).withUserObject(this).getSections()"> Submit section </button>
+    
+    </div>
+
+
+    <h3> current skill </h3>
+    <div>
+    <p id="pSK"> enter a number starting from 1 to view nth skill you entered  </p>
+    <input type="text" id="text-skl-view" value="">
+    <button onclick="google.script.run.withSuccessHandler(showEditSkills).withUserObject(this).getAllSkills()"> get-one-skill </button>
+    </div>
+    
+    <h2> Edit skill set info </h2>
+    <div>
+     <input type="checkbox" id="skillnamecheck" name="editchecks5" value="skillnamecheck">
+      <label for="skillnamecheck"> skill name</label>
+      <input type="text" id="skillnamereplace" name="editinputs5" value=" ">
+      <br>
+      <br>
+      <input type="checkbox" id="skilllevelcheck" name="editchecks5" value="skilllevelcheck">
+      <label for="skilllevelcheck">skill level </label>
+      <!--input type="text" id="skilllevelreplace" name="editinputs5" value=" "-->
+      <select  id="skilllevelreplace" name="editinputs5">
+      <option value="1">1</option>
+      <option value="2">2</option>
+      <option value="3">3</option>
+      <option value="4">4</option>
+      <option value="5">5</option>
+      <option value="6">6</option>
+      <option value="7">7</option>
+      <option value="8">8</option>
+      <option value="9">9</option>
+      <option value="10">10</option>
+      </select>
+      <br>
+      <br>
+      <br>
+      <button onclick = "google.script.run.withSuccessHandler(editCheckedItems5).withUserObject(this).getAllSkills()"> submit skills</button>
+    </div>
+
+
+    <h3> current eduation </h3>
+    <div>
+    <p id="pschool"> enter a number starting from 1 to view nth education you entered  </p>
+    <input type="text" id="text-edu-view" value="">
+    <button onclick="google.script.run.withSuccessHandler(showEditEdu).withUserObject(this).getEducation()"> get-one-edu </button>
+    </div>
+
+
+    <h2> Edit Lastest Education Info </h2>
+    <div>
+      <input type="checkbox" id="schoolcheck" name="editchecks1" value="schoolcheck">
+      <label for="schoolcheck"> school </label>
+      <input type="text" id="schoolreplace" name="editinputs1" value=" ">
+      <br>
+      <br>
+      <input type="checkbox" id="majorcheck" name="editchecks1" value="majorcheck">
+      <label for="majorcheck"> major </label>
+      <input type="text" id="majorreplace" name="editinputs1" value=" ">
+      <br>
+      <br>
+      <input type="checkbox" id="GPAcheck" name="editchecks1" value="GPAcheck">
+      <label for="GPAcheck"> GPA </label>
+      <input type="text" id="GPAreplace" name="editinputs1" value=" ">
+      <br>
+      <br>
+      <input type="checkbox" id="affiliationcheck" name="editchecks1" value="affiliationcheck">
+      <label for="affiliationcheck">classification/affiliation</label>
+      <input type="text" id="affiliationreplace" name="editinputs1" value=" ">
+      <br>
+      <br>
+      <input type="checkbox" id="startmcheck" name="editchecks1" value="startmlcheck">
+      <label for="startmcheck">start month</label>
+      <input type="text" id="startmreplace" name="editinputs1" value=" ">
+      <br>
+      <br>
+      <input type="checkbox" id="startycheck" name="editchecks1" value="startycheck">
+      <label for="startycheck">start year</label>
+      <input type="text" id="startyreplace" name="editinputs1" value=" ">
+      <br>
+      <br>
+      <input type="checkbox" id="endmcheck" name="editchecks1" value="endmcheck">
+      <label for="endmcheck">end month</label>
+      <input type="text" id="endmreplace" name="editinputs1" value=" ">
+      <br>
+      <br>
+      <input type="checkbox" id="endycheck" name="editchecks1" value="endylcheck">
+      <label for="endycheck">end year</label>
+      <input type="text" id="endyreplace" name="editinputs1" value=" ">
+      <br>
+      <br>
+
+    </div>
+
+    <button onclick = "google.script.run.withSuccessHandler(editCheckedItems1).withUserObject(this).getEducation()"> submit education</button>
+
+    <h3> current header </h3>
+    <div>
+    <p id="pH"> click here to see the header info </p>
+    <button onclick="google.script.run.withSuccessHandler(showEditHead).withUserObject(this).getHeader()"> get-one-header </button>
+    </div>
+
+    <h2> Edit Header Info </h2>
+    <div>
+      <input type="checkbox" id="fnamecheck" name="editchecks2" value="fnamecheck">
+      <label for="fnamecheck"> header first name </label>
+      <input type="text" id="fnamereplace" name="editinputs2" value=" ">
+      <br>
+      <br>
+      <input type="checkbox" id="lnamecheck" name="editchecks2" value="lnamecheck">
+      <label for="lnamecheck"> header last name </label>
+      <input type="text" id="lnamereplace" name="editinputs2" value=" ">
+      <br>
+      <br>
+      <input type="checkbox" id="emailcheck" name="editchecks2" value="headeremailcheck">
+      <label for="headeremailcheck"> header email </label>
+      <input type="text" id="emailreplace" name="editinputs2" value=" ">
+      <br>
+      <br>
+      <input type="checkbox" id="phonecheck" name="editchecks2" value="headerphonecheck">
+      <label for="headerphonecheck"> header phone </label>
+      <input type="text" id="phonereplace" name="editinputs2" value=" ">
+      <br>
+      <br>
+      <input type="checkbox" id="lkacccheck" name="editchecks2" value="lkacccheck">
+      <label for="lkacccheck"> header linkedin url </label>
+      <input type="text" id="lkaccreplace" name="editinputs2" value=" ">
+      <br>
+      <br>
+      <input type="checkbox" id="porturlcheck" name="editchecks2" value="porturlcheck">
+      <label for="porturlcheck"> header profile url </label>
+      <input type="text" id="porturlreplace" name="editinputs2" value=" ">
+      <br>
+      <br>
+    </div>
+
+    <button onclick = "google.script.run.withSuccessHandler(editCheckedItems2).withUserObject(this).getHeader()"> submit header</button>
+
+    <h3> current experience </h3>
+    <div>
+    <p id="pEXP"> enter a number starting from 1 to view nth experienced you entered </p>
+    <input type="text" id="text-exp-view" value="">
+    <button onclick="google.script.run.withSuccessHandler(showEditEXP).withUserObject(this).getExperience()"> get-one-exp </button>
+    </div>
+
+
+    <h2> Edit Lastest Experience Info </h2>
+    <p> update the experience you viewed. </p>
+    <div>
+      <input type="checkbox" id="companycheck" name="editchecks3" value="companycheck">
+      <label for="companycheck"> experience company </label>
+      <input type="text" id="companyreplace" name="editinputs3"  value=" ">
+      <br>
+      <br>
+      <input type="checkbox" id="positioncheck" name="editchecks3" value="positioncheck">
+      <label for="positioncheck"> experience postion </label>
+      <input type="text" id="positionreplace" name="editinputs3" value=" ">
+      <br>
+      <br>
+      <input type="checkbox" id="departmentcheck" name="editchecks3" value="departmentcheck">
+      <label for="departmentcheck"> experience department </label>
+      <input type="text" id="departmentreplace" name="editinputs3" value=" ">
+      <br>
+      <br>
+      <input type="checkbox" id="descriptioncheck" name= "editchecks3" value="descriptioncheck">
+      <label for="descriptioncheck"> experience description </label>
+      <input type="text" id="descriptionreplace" name="editinputs3" value=" ">
+      <br>
+      <br>
+      <input type="checkbox" id="supervisorcheck" name="editchecks3" value="supervisorcheck">
+      <label for="supervisorcheck"> experience supervisor </label>
+      <input type="text" id="supervisorreplace" name="editinputs3" value=" ">
+      <br>
+      <br>
+      <input type="checkbox" id="contactEmailcheck" name="editchecks3" value="contactEmailcheck">
+      <label for="contactEmailcheck"> experience supervisor email </label>
+      <input type="text" id="contactEmailreplace" name="editinputs3" value=" ">
+      <br>
+      <br>
+       <input type = "checkbox" id = "startDatecheck" name="editchecks3" value = "" />
+       <label for="startDatecheck">start date </label>
+       <input type = "date" id = "startDatereplace" name="editinputs3" value = "" />
+      <br>
+      <br>
+      <input type = "checkbox" id = "endDatecheck" name="editchecks3" value = "" />
+       <label for="endDatecheck">end date </label>
+       <input type = "date" id = "endDatereplace" name="editinputs3" value = "" />
+      <br>
+      <br>
+
+    </div>
+
+    <button onclick = "google.script.run.withSuccessHandler(editCheckedItems3).withUserObject(this).getExperience()"> submit experience</button>
+
+   
+    <h3> current honor </h3>
+    <div>
+    <p id="pHrn"> enter a number starting from 1 to view nth honor you entered  </p>
+    <input type="text" id="text-hon-view" value="">
+    <button onclick="google.script.run.withSuccessHandler(showEditHonor).withUserObject(this).getHonor()"> get-one-honor </button>
+    </div>
+
+    <h2> Edit latest Honor Info </h2>
+    <div>
+      <input type="checkbox" id="awardedHonorcheck" name="editchecks4" value="awardedHonorcheck">
+      <label for="awardedHonorcheck">awardedHonor </label>
+      <input type="text" id="awardedHonorreplace" name="editinputs4" value=" ">
+      <br>
+      <br>
+
+      <input type="checkbox" id="awardedBycheck" name="editchecks4" value="awardedBycheck">
+      <label for="awardedBycheck"> awardedBy </label>
+      <input type="text" id="awardedByreplace" name="editinputs4" value=" ">
+      <br>
+      <br>
+
+      <input type="checkbox" id="awardedYearcheck" name="editchecks4" value="awardedYearcheck">
+      <label for="awardedYearcheck"> awardedYear </label>
+      <input type="text" id="awardedYearreplace" name="editinputs4" value=" ">
+      <br>
+      <br>
+
+      <input type="checkbox" id="awardedTypecheck" name="editchecks4" value="awardedTypecheck">
+      <label for="awardedTypecheck"> awardedType </label>
+      <input type="text" id="awardedTypereplace" name="editinputs4" value=" ">
+      <br>
+      <br>
+    </div>
+
+    <button onclick = "google.script.run.withSuccessHandler(editCheckedItems4).withUserObject(this).getHonor()"> submit honor</button>
+
+
+
+
+
+
+
+
+
+  </body>
+</html>

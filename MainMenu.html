@@ -1,0 +1,290 @@
+<html>
+  <head>
+    <style>
+      body {
+        background-color:#d2b48c
+      }
+
+      /* header {
+        background-color:#40c764;
+        display:flex;
+        flex-direction:column;
+        margin:auto;
+        border-left:5px solid #36a353;
+      } */
+
+      footer {
+        background-color:#faf0e6;
+        display:flex;
+        flex-direction:column;
+        height:100%;
+        width:100%;
+        margin:0;
+      }
+
+
+      .section-button{
+        display: flex;
+        border: 2px;
+        font-size: 14px;
+      }
+
+    /*
+      .create-resume {
+        width:100%;
+      }
+
+      .footer-div {
+        background:#40c764;
+        color:white;
+        border-left:5px solid #36a353;
+        border-bottom:2px solid #36a353;
+      }
+
+      .footer-button {
+        background:transparent;
+        border:none;
+        width:100%;
+        height:40px;
+        font-size:14px;
+        color:white;
+      }
+
+      .footer-button:hover {
+        background:#36a353;
+        border:none;
+        color:white;
+      }
+
+      .button .help-button {
+        background:transparent;
+        border:none;
+      } */
+
+      /* <!-- BODY -->
+      div.resume-section {
+        width:100%;
+        background:white;
+        border-left:5px solid #b3b3b3;
+        border-bottom:1px solid #b3b3b3;
+      }
+      div.resume-section2 {
+        width:100%;
+        height:50px;
+        background:white;
+        border-left:5px solid #b3b3b3;
+        border-bottom:2px solid #b3b3b3;
+      }
+
+      .section-button {
+        background:transparent;
+        border:none;
+        width:100%;
+        height:100%;
+        font-size:14px;
+        text-align:left;
+      }
+
+      .section-button:hover {
+        color:#40c764;
+        background:transparent;
+        border:none;
+      } */
+
+      /* <!-- NAVBAR -->
+      .navbar {
+        display:flex;
+        flex-direction:row;
+        width:100%;
+        margin:0;
+        padding:0;
+        background-color:#40c764;
+      }
+
+      .navbar-select {
+        background:#40c764;
+        border: 1px #40c764;
+        color:white;
+        height:30px;
+        font-size:14px;
+      } */
+      
+      /* .navbar-select:hover {
+        background:#36a353;
+        color:white;
+      } 
+      
+      .navbar-option {
+        background-color:white;
+        color:black;
+      }
+      .dropdown {
+        background:#40c764;
+        color:white;
+        border-left:5px solid #36a353;
+        border-bottom:2px solid #36a353;
+      }
+      .dropdown:hover {
+        color:white;
+        background:#36a353;
+      } */
+      /* .dropbtn {
+        background: #40c764;
+        color:white;
+        height:30px;
+        font-size:14px;
+        background:transparent;
+        border:none;
+      }
+      .dropdown-content {
+        display:none;
+        position:absolute;
+        color:white;
+        background-color:#40c764;
+        min-width:100px;
+        box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+        z-index:1;
+      }
+      .dropdown-content a {
+        color:white;
+        background:#40c764;
+        padding:12px 16px;
+        text-decoration:none;
+        display:block;
+      }
+      .dropdown-content a:hover {
+        background-color:#ddd;
+        text-decoration:none;
+      }
+      .dropdown:hover .dropdown-content {display:flex;flex-direction:column;}
+      .dropdown:hover .dropbtn {background-color:#36a353; color:white;}
+      .dropdown:hover .navbar-select {background-color:#36a353;}
+      input[type='checkbox'] {
+        color:black;
+        text-decoration:none;
+        display:block;
+        position:relative;
+        padding: 4px 8px
+      } */
+    </style>
+    <link rel="stylesheet" href="https://ssl.gstatic.com/docs/script/css/add-ons1.css">
+    <title>Resume Add-on</title>
+  </head>
+  <body>
+  
+    <header> Resume Generator</header>
+    <div class="dropdown">
+      <select class="select-dropdown" >
+        <option value="1" selected>Template 1</option>
+        <option value="2">Template 2</option>
+        <option value="3">Template 3</option>
+      </select>
+    </div>
+
+
+    <button class="section-button" onclick="showHeader()"> Header Information </button>
+    <button class="section-button" onclick="showExperience()"> Experience Information </button>
+    <button class="section-button" onclick="showSkills()"> Skills </button>
+    <button class="section-button" onclick="showEducation()"> Education History </button>
+    <button class="section-button" onclick="showHonor()"> Honors and Awards </button>
+    <button class="section-button" onclick="showSections()"> Free Text </button>
+    
+
+  </body>
+
+  <footer>
+    <div class="footer-item"><button class="footer-button" onclick="InsertFrame()"> Create Resume! </button></div>
+    <div class="footer-item"><button class="footer-button" onclick="google.script.host.close()"> Close </button></div>
+    <div class="footer-item"><button class="footer-button" onclick="showEdit()"> Edit Sections </button></div>
+    <div class="footer-item"><button class="footer-button" onclick="DeleteAll()"> Clear Doc </button></div>
+    <div class="footer-item"><button class="footer-button" onclick="showDelete()"> Delete Sections </button></div>
+  </footer>
+
+  <!-- ALL JS -->
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+  <script>
+      /** GLOBAL VARIABLES **/
+      var template_id;
+
+      /**
+        Prints errors on google.script.run statements
+      **/
+      function onFailure(error) {
+        alert("ERROR: " + error.message);
+      }
+
+      /**
+        Updates HTML based on sections selected
+        sections variables can be forwarded to whatever file
+      **/
+      function onSectionSubmit() {
+        var boxes = document.getElementsByClassName("sectionCheck");
+        var sections = [];
+        alert("here");
+        for (var i = 0; i < boxes.length; i++) {
+          if (boxes[i].checked) {
+            sections.push(boxes[i].value);
+            var id = sections[i].concat("-section");
+            var divObj = document.getElementById(id);
+            if (divObj.style.display == "none") {
+              divObj.style.display = "block";
+            }
+          } else {
+            var value = boxes[i].value;
+            var id = value.concat("-section");
+            var divObj = document.getElementById(id);
+            if (divObj.style.display == "block") {
+              divObj.style.display = "none";
+            }
+          }
+        }
+      }
+
+      /**
+        JS functions for calling Code.gs methods
+
+        As far as I know we have to go through these to be able to call the html functions,
+        so make a function here and connect it to its corresponding button above
+      **/
+      function showHeader() {
+        google.script.run.withFailureHandler(onFailure).showHeaderInputDialog();
+      }
+
+      function showExperience() {
+        google.script.run.withFailureHandler(onFailure).showExperienceDialog();
+      }
+
+      function showSkills() {
+        google.script.run.withFailureHandler(onFailure).showSkillSetDialog();
+      }
+
+      function showEducation() {
+        google.script.run.withFailureHandler(onFailure).showEducationDialog();
+      }
+      function showHonor(){
+        google.script.run.withFailureHandler(onFailure).showHonorDialog();
+      }
+
+      function showSections(){
+         google.script.run.withFailureHandler(onFailure).showSectionDialog();
+      }
+      function showEdit(){
+        google.script.run.withFailureHandler(onFailure).showEditDialog();
+      }
+      function showDelete(){
+        google.script.run.withFailureHandler(onFailure).showDeleteDialog();
+      }
+      function InsertFrame(){
+        var template = $("#resume-template-select").val();
+        if (template === "1")
+          google.script.run.withFailureHandler(onFailure).insertTemplate1();
+        else if (template === "2")
+          google.script.run.withFailureHandler(onFailure).insertTemplate2();
+        else
+          google.script.run.withFailureHandler(onFailure).insertTemplate3();
+      }
+      function DeleteAll(){
+        google.script.run.withFailureHandler(onFailure).removeAll();
+      }
+  </script>
+</html>
